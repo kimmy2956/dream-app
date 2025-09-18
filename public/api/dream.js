@@ -29,14 +29,17 @@ export default async function handler(req, res) {
 
     const text = completion.choices[0].message.content || "";
 
-    const meaningMatch = text.match(/คำทำนาย[:：](.*?)(?=เลขเด็ด|$)/s);
-    const numberMatch = text.match(/เลขเด็ด[:：](.*)/s);
+    // fallback parsing
+    let meaning = text;
+    let numbers = "ไม่มีเลขเด็ด";
 
-    res.status(200).json({
-      meaning: meaningMatch ? meaningMatch[1].trim() : text,
-      numbers: numberMatch ? numberMatch[1].trim() : "ไม่มีเลขเด็ด",
-    });
+    const meaningMatch = text.match(/คำทำนาย[:：]([\s\S]*?)(?=เลขเด็ด|$)/);
+    if (meaningMatch) meaning = meaningMatch[1].trim();
 
+    const numberMatch = text.match(/เลขเด็ด[:：]([\s\S]*)/);
+    if (numberMatch) numbers = numberMatch[1].trim();
+
+    res.status(200).json({ meaning, numbers });
   } catch (err) {
     console.error("API Error:", err);
     res.status(500).json({
