@@ -117,7 +117,7 @@ button.addEventListener("click", async () => {
   resultSection.style.display = "none";
 
   try {
-    const response = await fetch("/api/dream", {
+    const response = await fetch("/api/dream.js", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ dream })
