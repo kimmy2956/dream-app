@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ทำนายฝัน พร้อมเลขเด็ด</title>
+<link href="https://fonts.googleapis.com/css2?family=Kanit:wght@400;700&display=swap" rel="stylesheet">
+<style>
+/* ===== Base ===== */
+* { margin:0; padding:0; box-sizing:border-box; font-family:'Kanit', sans-serif; }
+body { background:#fff8f0; color:#333; text-align:center; padding:20px; }
+
+/* ===== Header ===== */
+header { 
+  background: linear-gradient(135deg, #ff9966, #ff5e62); 
+  padding:30px 20px; 
+  border-radius:20px; 
+  color:white; 
+  box-shadow:0 5px 15px rgba(0,0,0,0.1);
+}
+header h1 { font-size:2rem; margin-bottom:10px; }
+header p { font-size:1rem; }
+
+/* ===== Input ===== */
+input[type=text] { 
+  width:80%; max-width:400px; 
+  padding:12px 15px; 
+  border-radius:10px; 
+  border:1px solid #ff9966; 
+  margin-top:20px;
+  font-size:1rem;
+}
+button { 
+  padding:12px 25px; 
+  margin-top:15px; 
+  background:#ff5e62; 
+  color:white; 
+  font-size:1rem; 
+  font-weight:bold; 
+  border:none; 
+  border-radius:10px; 
+  cursor:pointer; 
+  transition:0.3s; 
+}
+button:hover { background:#e14a52; transform: scale(1.05); }
+
+/* ===== Status ===== */
+#statusText { margin-top:15px; font-weight:bold; color:#ff5e62; }
+
+/* ===== Result ===== */
+#resultSection { display:none; margin-top:25px; display:flex; flex-direction:column; gap:15px; align-items:center; }
+.card { 
+  background:white; 
+  padding:20px; 
+  border-radius:15px; 
+  box-shadow:0 4px 15px rgba(0,0,0,0.1); 
+  max-width:600px; 
+  width:90%;
+  text-align:left;
+}
+.card h3 { color:#ff5e62; margin-bottom:10px; }
+.card p { font-size:1rem; line-height:1.5; }
+
+/* ===== Footer ===== */
+footer { margin-top:40px; font-size:14px; color:#555; }
+
+/* ===== Responsive ===== */
+@media(max-width:500px){
+  input[type=text] { width:100%; }
+  .card { padding:15px; }
+}
+</style>
+</head>
+<body>
+<header>
+  <h1>🔮 ทำนายฝัน พร้อมเลขเด็ด</h1>
+  <p>พิมพ์ความฝันของคุณ แล้วรับคำทำนายพร้อมเลขเด็ดทันที</p>
+</header>
+
+<input type="text" id="dreamInput" placeholder="พิมพ์ความฝันของคุณที่นี่...">
+<br>
+<button id="analyzeBtn">ทำนายฝัน</button>
+<p id="statusText"></p>
+
+<section id="resultSection">
+  <div class="card">
+    <h3>📖 คำทำนาย</h3>
+    <p id="dreamMeaning">-</p>
+  </div>
+  <div class="card">
+    <h3>🎲 เลขเด็ด</h3>
+    <p id="luckyNumbers">-</p>
+  </div>
+</section>
+
+<footer>
+พัฒนาโดย ธันยรัศมิ์ ประภาจิรสกุล
+</footer>
+
+<script>
+const input = document.getElementById("dreamInput");
+const button = document.getElementById("analyzeBtn");
+const statusText = document.getElementById("statusText");
+const resultSection = document.getElementById("resultSection");
+const dreamMeaning = document.getElementById("dreamMeaning");
+const luckyNumbers = document.getElementById("luckyNumbers");
+
+button.addEventListener("click", async () => {
+  const dream = input.value.trim();
+  if (!dream) return alert("กรุณาพิมพ์ความฝันก่อน");
+
+  button.disabled = true;
+  button.innerText = "กำลังทำนาย...";
+  statusText.innerText = "🔮 กำลังประมวลผล...";
+  dreamMeaning.innerText = "-";
+  luckyNumbers.innerText = "-";
+  resultSection.style.display = "none";
+
+  try {
+    const response = await fetch("/api/dream", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ dream })
+    });
+
+    const data = await response.json();
+
+    if (data.error) {
+      statusText.innerText = "❌ " + data.error;
+      return;
+    }
+
+    // แสดงผลลัพธ์
+    dreamMeaning.innerText = data.meaning || "ไม่พบคำทำนาย";
+    luckyNumbers.innerText = data.numbers || "ไม่มีเลขเด็ด";
+    resultSection.style.display = "flex";
+    statusText.innerText = "✅ สำเร็จ!";
+
+  } catch (err) {
+    console.error(err);
+    statusText.innerText = "❌ เกิดข้อผิดพลาดในการเชื่อมต่อ";
+  } finally {
+    button.disabled = false;
+    button.innerText = "ทำนายฝัน";
+  }
+});
+</script>
+</body>
+</html>
