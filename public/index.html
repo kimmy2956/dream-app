@@ -85,11 +85,11 @@ footer { margin-top:40px; font-size:14px; color:#555; }
 <section id="resultSection">
   <div class="card">
     <h3>📖 คำทำนาย</h3>
-    <p id="dreamMeaning"></p>
+    <p id="dreamMeaning">-</p>
   </div>
   <div class="card">
     <h3>🎲 เลขเด็ด</h3>
-    <p id="luckyNumbers"></p>
+    <p id="luckyNumbers">-</p>
   </div>
 </section>
 
@@ -112,22 +112,25 @@ button.addEventListener("click", async () => {
   button.disabled = true;
   button.innerText = "กำลังทำนาย...";
   statusText.innerText = "🔮 กำลังประมวลผล...";
+  dreamMeaning.innerText = "-";
+  luckyNumbers.innerText = "-";
+  resultSection.style.display = "none";
 
   try {
     const response = await fetch("/api/dream", {
-      method:"POST",
-      headers:{ "Content-Type":"application/json" },
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ dream })
     });
 
     const data = await response.json();
 
-    if(data.error){
+    if (data.error) {
       statusText.innerText = "❌ " + data.error;
-      resultSection.style.display = "none";
       return;
     }
 
+    // แสดงผลลัพธ์
     dreamMeaning.innerText = data.meaning || "ไม่พบคำทำนาย";
     luckyNumbers.innerText = data.numbers || "ไม่มีเลขเด็ด";
     resultSection.style.display = "flex";
@@ -135,8 +138,7 @@ button.addEventListener("click", async () => {
 
   } catch (err) {
     console.error(err);
-    statusText.innerText = "❌ เกิดข้อผิดพลาด";
-    resultSection.style.display = "none";
+    statusText.innerText = "❌ เกิดข้อผิดพลาดในการเชื่อมต่อ";
   } finally {
     button.disabled = false;
     button.innerText = "ทำนายฝัน";
@@ -145,3 +147,4 @@ button.addEventListener("click", async () => {
 </script>
 </body>
 </html>
+
