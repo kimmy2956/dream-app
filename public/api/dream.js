@@ -11,24 +11,24 @@ export default async function handler(req, res) {
 
   try {
     const { dream } = req.body;
+    if (!dream) return res.status(400).json({ error: "กรุณาส่งความฝัน" });
 
     const prompt = `
 คุณคือผู้เชี่ยวชาญการทำนายฝันแบบไทย
 ความฝัน: "${dream}"
 
 กรุณาตอบเป็นภาษาไทย โดยแบ่งเป็น 2 ส่วน:
-1. 📖 คำทำนาย: อธิบายความหมายของความฝันนี้
-2. 🎲 เลขเด็ด: ให้เลขเด่น 2-3 ตัว (เช่น 05, 27, 359)
-    `;
+1. 📖 คำทำนาย
+2. 🎲 เลขเด็ด (2-3 ตัวเลข)
+`;
 
     const completion = await client.chat.completions.create({
       model: "gpt-4o-mini",
       messages: [{ role: "user", content: prompt }],
     });
 
-    const text = completion.choices[0].message.content;
+    const text = completion.choices[0].message.content || "";
 
-    // แยกคำตอบ
     const meaningMatch = text.match(/คำทำนาย[:：](.*?)(?=เลขเด็ด|$)/s);
     const numberMatch = text.match(/เลขเด็ด[:：](.*)/s);
 
@@ -39,6 +39,9 @@ export default async function handler(req, res) {
 
   } catch (err) {
     console.error("API Error:", err);
-    res.status(500).json({ error: "เกิดข้อผิดพลาด", details: err.message });
+    res.status(500).json({
+      error: "เกิดข้อผิดพลาด",
+      details: err.message || err.toString(),
+    });
   }
 }
