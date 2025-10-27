@@ -1,16 +1,17 @@
 {
-  "name": "dream-app",
-  "version": "1.0.0",
-  "description": "เว็บทำนายฝันพร้อมเลขเด็ด (Frontend + Backend สำหรับ Vercel)",
-  "main": "api/dream.js",
-  "scripts": {
-    "dev": "vercel dev",
-    "start": "vercel dev"
-  },
-  "dependencies": {
-    "openai": "^4.0.0"
-  },
-  "engines": {
-    "node": "18.x"
-  }
+"name": "dreams-site",
+"version": "1.0.0",
+"private": true,
+"scripts": {
+"dev": "next dev",
+"build": "next build",
+"start": "next start",
+"test-local": "node ./test/run-local-test.js"
+},
+"dependencies": {
+"next": "14.0.0",
+"react": "18.2.0",
+"react-dom": "18.2.0",
+"googleapis": "121.0.0"
+}
 }
