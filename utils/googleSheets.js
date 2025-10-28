@@ -26,7 +26,7 @@ export async function getSheetRows(gsaKey, sheetId, range) {
 
     return data;
   } catch (err) {
-    console.error('❌ Google Sheets fetch error:', err);
+    console.error('❌ Google Sheets fetch error:', err.response?.data || err.message || err);
     throw new Error('Failed to fetch Google Sheets data');
   }
 }
